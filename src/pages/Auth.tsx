@@ -53,7 +53,7 @@ const Auth = () => {
           <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
             <Wallet className="w-6 h-6 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground">BudgetWise</h1>
+          <h1 className="text-3xl font-bold text-foreground">SpendWise</h1>
         </div>
 
         <Card className="border-border shadow-lg">
