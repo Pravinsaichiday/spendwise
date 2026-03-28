@@ -14,7 +14,7 @@ const AppLayout = ({ children, selectedMonth, onMonthChange }: AppLayoutProps) =
       <AppSidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <AppNavbar selectedMonth={selectedMonth} onMonthChange={onMonthChange} />
-        <main className="flex-1 p-6 overflow-auto">{children}</main>
+        <main className="flex-1 p-8 overflow-auto">{children}</main>
       </div>
     </div>
   );

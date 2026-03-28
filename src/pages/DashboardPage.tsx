@@ -23,7 +23,7 @@ const DashboardPage = ({ selectedMonth }: DashboardPageProps) => {
   const budgetTotal = budgetSummary?.reduce((sum, b) => sum + b.budget, 0) || 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="text-sm text-muted-foreground">Your financial overview at a glance</p>
