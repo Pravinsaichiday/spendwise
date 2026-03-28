@@ -14,7 +14,7 @@ const AlertsPanel = () => {
           <CardTitle className="text-base">Alerts</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">No alerts — you're on track! 🎉</p>
+          <p className="text-sm text-muted-foreground">No alerts. You're on track! 🎉</p>
         </CardContent>
       </Card>
     );

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { LayoutDashboard, ArrowLeftRight, PiggyBank, BarChart3, Bell, Download, LogOut, Wallet, ChevronLeft, ChevronRight, Moon, Sun } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, PiggyBank, BarChart3, Bell, Download, LogOut, Wallet, ChevronLeft, ChevronRight, Moon, Sun, Target, User } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAlerts } from "@/hooks/useAlerts";
@@ -10,6 +10,7 @@ const navItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Transactions", url: "/transactions", icon: ArrowLeftRight },
   { title: "Budgets", url: "/budgets", icon: PiggyBank },
+  { title: "Goals", url: "/goals", icon: Target },
   { title: "Reports", url: "/reports", icon: BarChart3 },
   { title: "Alerts", url: "/alerts", icon: Bell },
   { title: "Export", url: "/export", icon: Download },
@@ -89,6 +90,13 @@ const AppSidebar = () => {
             {user?.email}
           </div>
         )}
+        <button
+          onClick={() => navigate("/profile")}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm w-full text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+        >
+          <User className="w-5 h-5 shrink-0" />
+          {!collapsed && <span>Profile</span>}
+        </button>
         <button
           onClick={() => setDark(!dark)}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm w-full text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"

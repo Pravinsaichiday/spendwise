@@ -13,6 +13,8 @@ import BudgetsPage from "@/pages/BudgetsPage";
 import ReportsPage from "@/pages/ReportsPage";
 import AlertsPage from "@/pages/AlertsPage";
 import ExportPage from "@/pages/ExportPage";
+import GoalsPage from "@/pages/GoalsPage";
+import ProfilePage from "@/pages/ProfilePage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,9 +42,11 @@ const ProtectedRoutes = () => {
         <Route path="/" element={<DashboardPage selectedMonth={selectedMonth} />} />
         <Route path="/transactions" element={<TransactionsPage selectedMonth={selectedMonth} />} />
         <Route path="/budgets" element={<BudgetsPage selectedMonth={selectedMonth} />} />
+        <Route path="/goals" element={<GoalsPage />} />
         <Route path="/reports" element={<ReportsPage selectedMonth={selectedMonth} />} />
         <Route path="/alerts" element={<AlertsPage />} />
         <Route path="/export" element={<ExportPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AppLayout>
