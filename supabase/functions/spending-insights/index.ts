@@ -1,27 +1,72 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { transactions, budgets, month } = await req.json();
+    // Authenticate the user
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Missing authorization header" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Validate input
+    const body = await req.json();
+    const { transactions, budgets, month } = body;
+
+    if (!Array.isArray(transactions) || !Array.isArray(budgets) || typeof month !== "string") {
+      return new Response(JSON.stringify({ error: "Invalid input: transactions and budgets must be arrays, month must be a string" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (month.length > 20) {
+      return new Response(JSON.stringify({ error: "Invalid month format" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Limit array sizes to prevent abuse
+    const safeTransactions = transactions.slice(0, 50);
+    const safeBudgets = budgets.slice(0, 20);
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    if (!LOVABLE_API_KEY) throw new Error("Server configuration error");
 
     const prompt = `Analyze this personal finance data and provide exactly 4-6 short, actionable spending insights. Use simple language, no em dashes. Use rupee symbol for currency.
 
 Current month: ${month}
 
 Transactions this month:
-${JSON.stringify(transactions.slice(0, 50))}
+${JSON.stringify(safeTransactions)}
 
 Budgets:
-${JSON.stringify(budgets)}
+${JSON.stringify(safeBudgets)}
 
 Rules:
 - Each insight should be 1 sentence
@@ -88,8 +133,7 @@ Rules:
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const t = await response.text();
-      console.error("AI error:", response.status, t);
+      console.error("AI gateway error:", response.status);
       throw new Error("AI gateway error");
     }
 
@@ -110,7 +154,7 @@ Rules:
     });
   } catch (e) {
     console.error("Error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "An internal error occurred" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
